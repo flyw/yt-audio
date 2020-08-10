@@ -10,8 +10,7 @@
 {{--    <meta name="apple-mobile-web-app-capable" content="yes" />--}}
 {{--    <meta name="apple-mobile-web-app-status-bar-style" content="black" />--}}
     <link rel="apple-touch-icon" href="{!! secure_url('/img/icon.png') !!}"/>
-
-{{--    <link rel="apple-touch-startup-image" href="{!! url('/img/icon.png') !!}" />--}}
+    <link rel="apple-touch-startup-image" href="{!! secure_url('/img/icon.png') !!}" />
 
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
