@@ -8,6 +8,7 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -119,5 +120,6 @@ class AppServiceProvider extends ServiceProvider
             // $event->exception
 
         });
+        URL::forceScheme('https');
     }
 }
