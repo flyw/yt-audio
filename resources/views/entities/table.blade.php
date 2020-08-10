@@ -23,7 +23,7 @@
                 </a>
                 <div class="card-body p-1 m-0 pt-2 pb-2 @if($entity->is_viewed) bg-dark @endif" id="item-card-{{$entity->id}}">
                     <div class="d-flex justify-content-center">
-                        <span class="badge bg-dark badge-pill">{{$entity->published}}</span>
+                        <span class="badge bg-dark badge-pill">{{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
                     </div>
                     <a href="{{route("entities.show",[$entity->id])}}" onclick="setViewed({{$entity->id}})">
                     <div class="card-text lead @if($entity->is_viewed) text-white @else text-dark @endif" >

@@ -49,7 +49,7 @@
                     </audio>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <span class="badge badge-light badge-pill">{{$entity->published}}</span>
+                    <span class="badge badge-light badge-pill">{{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
                 </div>
                 <div class="card-text lead">
                     <span>{!! $entity->title !!}</span>

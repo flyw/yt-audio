@@ -61,7 +61,7 @@
                                 <i class="fas fa-play"></i> {!! $entity->duration !!}
                             </span>
                             <span class="badge bg-dark">
-                                {{\Carbon\Carbon::parse($entity->published)->format('y/m/d H:i')}}</span>
+                                {{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
                         </span>
                     </div>
                     </a>
