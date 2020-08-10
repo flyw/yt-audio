@@ -1,0 +1,147 @@
+{
+    "name": "rappasoft/laravel-boilerplate",
+    "type": "project",
+    "description": "The Laravel Boilerplate Project.",
+    "keywords": [
+        "framework",
+        "laravel",
+        "boilerplate"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.2",
+        "ext-json": "*",
+        "ext-simplexml": "*",
+        "albertcht/invisible-recaptcha": "^1.9",
+        "altek/accountant": "^1.2",
+        "altek/eventually": "^1.0",
+        "appstract/laravel-blade-directives": "^1.5",
+        "arcanedev/log-viewer": "^5.0",
+        "babenkoivan/scout-elasticsearch-driver": "^4.0",
+        "barryvdh/laravel-snappy": "^0.4.6",
+        "creativeorange/gravatar": "~1.0",
+        "davejamesmiller/laravel-breadcrumbs": "^5.0",
+        "facade/ignition": "^1.11",
+        "fideloper/proxy": "^4.0",
+        "h4cc/wkhtmltopdf-amd64": "0.12.4",
+        "hieu-le/active": "^4.0",
+        "infyomlabs/adminlte-templates": "6.0.x-dev",
+        "infyomlabs/laravel-generator": "6.0.x-dev",
+        "joydata/logs": "dev-master",
+        "joydata/settings": "dev-master",
+        "joydata/utilities": "dev-master",
+        "lab404/laravel-impersonate": "^1.4",
+        "langleyfoxall/laravel-nist-password-rules": "^4.0",
+        "laravel/framework": "^6.3",
+        "laravel/socialite": "^4.1",
+        "laravelcollective/html": "^6.0",
+        "maatwebsite/excel": "~3.1",
+        "prettus/l5-repository": "^2.6",
+        "spatie/laravel-html": "^2.22",
+        "spatie/laravel-permission": "^3.0",
+        "torann/geoip": "^1.0",
+        "webpatser/laravel-uuid": "^3.0",
+        "wemersonjanuario/wkhtmltopdf-windows": "0.12.2.3",
+        "yajra/laravel-datatables": "^1.5"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.2",
+        "barryvdh/laravel-ide-helper": "^2.6",
+        "codedungeon/phpunit-result-printer": "^0.26.1",
+        "facade/ignition-code-editor": "^1.0",
+        "facade/ignition-self-diagnosis": "^1.0",
+        "fzaninotto/faker": "^1.9.1",
+        "mockery/mockery": "^1.0",
+        "orangehill/iseed": "^2.6",
+        "nunomaduro/collision": "^3.0",
+        "phpunit/phpunit": "^8.0",
+        "roave/security-advisories": "dev-master"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "secure-http": false
+    },
+    "autoload": {
+        "classmap": [
+            "database/seeds",
+            "database/factories"
+        ],
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta"
+        ],
+        "post-install-cmd": [
+            "@php artisan joydata:post-scripts:run",
+            "@cp vendor/joydata/*/*.ini ."
+        ],
+        "post-update-cmd": [
+            "@php artisan joydata:post-scripts:run",
+            "@cp vendor/joydata/*/*.ini ."
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ],
+        "clear-all": [
+            "@php artisan clear-compiled",
+            "@php artisan cache:clear",
+            "@php artisan route:clear",
+            "@php artisan view:clear",
+            "@php artisan config:clear",
+            "composer dumpautoload -o"
+        ],
+        "cache-all": [
+            "@php artisan config:cache",
+            "@php artisan route:cache"
+        ],
+        "cc": [
+            "composer clear-all",
+            "composer cache-all"
+        ],
+        "phpunit": [
+            "phpunit > output.txt -d memory_limit=2048M"
+        ],
+        "coverage-xml": [
+            "phpunit --coverage-clover ./coverage.xml"
+        ],
+        "coverage-html": [
+            "phpunit --coverage-html ./coverage"
+        ],
+        "coverage-text": [
+            "phpunit --coverage-text"
+        ]
+    },
+    "repositories": {
+        "joydata": {
+            "type": "composer",
+            "url": "http://composer.joydata.com"
+        },
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    }
+}

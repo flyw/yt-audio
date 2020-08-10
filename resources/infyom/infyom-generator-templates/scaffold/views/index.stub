@@ -1,0 +1,26 @@
+@extends('backend.layouts.app')
+
+@section('content')
+    <section class="content-header">
+        <h1 class="float-left">$MODEL_NAME_PLURAL_HUMAN$</h1>
+        <h1 class="float-right">
+           <a class="btn btn-primary" href="{!! route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.create') !!}"><i class="fas fa-plus-circle"></i> Add New</a>
+        </h1>
+    </section>
+    <div class="content">
+        <div class="clearfix"></div>
+
+        @include('flash::message')
+
+        <div class="clearfix"></div>
+        <div class="card card-accent-primary shadow-lg">
+            <div class="card-body">
+                    @include('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.table')
+            </div>
+        </div>
+        <div class="text-center">
+        $PAGINATE$
+        </div>
+    </div>
+@endsection
+

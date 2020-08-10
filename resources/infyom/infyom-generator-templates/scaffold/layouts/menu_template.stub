@@ -1,0 +1,5 @@
+<li class="nav-item">
+    <a class="nav-link {{ active_class(Active::checkUriPattern('$MODEL_NAME_PLURAL_CAMEL$*')) }}" href="{{ route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index') }}">
+        <i class="nav-icon fas fa-info-circle"></i>$MODEL_NAME_PLURAL_HUMAN$
+    </a>
+</li>

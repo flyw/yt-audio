@@ -1,0 +1,11 @@
+<!-- $FIELD_NAME_TITLE$ Field -->
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="card-title">{!! Form::label('$FIELD_NAME$', '$FIELD_NAME_TITLE$:') !!}</h6>
+            <p class="card-text">
+                {!! $$MODEL_NAME_CAMEL$->$FIELD_NAME$ !!}
+            </p>
+        </div>
+    </div>
+</div>
