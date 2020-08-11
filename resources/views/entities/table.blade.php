@@ -31,19 +31,19 @@
                     </div>
                     </a>
                     <div class="d-flex flex-row justify-content-between mt-2">
-                        <span class="badge badge-info badge-pill">
+                        <span class="badge badge-info">
                             <span class="lead">
                                 <i class="far fa-eye"></i> {!! floor($entity->views_count/1000) !!}k
                             </span>
                         </span>
 
-                        <span class="badge badge-success badge-pill">
+                        <span class="badge badge-success">
                             <span class="lead font-weight-bolder">
                                 <i class="far fa-play-circle"></i> {!! $entity->fileSize !!}
                             </span>
                         </span>
 
-                        <span class="badge badge-secondary badge-pill">
+                        <span class="badge badge-secondary">
                             <span class="lead font-weight-bolder">
                                 <i class="far fa-clock"></i> {!! $entity->duration !!}
                             </span>
