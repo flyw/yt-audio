@@ -44,7 +44,7 @@
             </div>
             <div class="card-body bg-dark text-white p-1 m-0 pt-2 pb-2">
                 <div class="w-100">
-                    <audio controls id="player" class="w-100" preload="metadata">
+                    <audio controls id="player" class="w-100" preload="auto">
                         <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="audio/mp4">
                     </audio>
                 </div>
