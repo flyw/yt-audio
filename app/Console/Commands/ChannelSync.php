@@ -46,7 +46,7 @@ class ChannelSync extends Command
             $feed = FeedFetcher::fetch($channel->channel_id);
             foreach ($feed->entry as $entry) {
                 $this->info('  Sync Entry: '.$entry->title);
-                EntryDownload::dispatch($channel->id , $entry);
+                EntryDownload::dispatchNow($channel->id , $entry);
             }
         }
         $this->info('done');
