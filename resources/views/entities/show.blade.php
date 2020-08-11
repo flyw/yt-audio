@@ -11,9 +11,6 @@
             var player = document.getElementById("player");
            $("#play-btn").click(function () {
                if (player.paused) {
-                   if (player.src === "") {
-                       player.src = "{!! url('storage').'/'.$entity->video_uri !!}"
-                   }
                    player.play();
                    $("#play-btn").removeClass('fa-play-circle')
                    .addClass('fa-pause-circle');
@@ -47,7 +44,9 @@
             </div>
             <div class="card-body bg-dark text-white p-1 m-0 pt-2 pb-2">
                 <div class="w-100">
-                    <audio controls id="player" class="w-100"></audio>
+                    <audio controls id="player" class="w-100" preload="none">
+                        <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="audio/mp4">
+                    </audio>
                 </div>
                 <div class="d-flex justify-content-center">
                     <span class="badge badge-light badge-pill">{{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
