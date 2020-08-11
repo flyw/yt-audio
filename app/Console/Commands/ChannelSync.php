@@ -46,6 +46,7 @@ class ChannelSync extends Command
             $this->info('Sync Channel: '.$channel->name);
             $feed = FeedFetcher::fetch($channel->channel_id);
             $channel->published = Carbon::parse($feed->entry[0]->published)->addHours(8);
+            $channel->save();
             foreach ($feed->entry as $entry) {
                 $this->info('  Sync Entry: '.$entry->title);
                 EntryDownload::dispatchNow($channel->id , $entry);
