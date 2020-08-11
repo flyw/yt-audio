@@ -97,17 +97,17 @@
                 </div>
                 <div class="col-12 d-flex justify-content-between pr-5 pl-5 pt-0 pb-3">
                     <div class="d-flex flex-column position-relative align-self-center"
-                         onclick='document.getElementById("player").currentTime +=10'>
+                         onclick='document.getElementById("player").currentTime -=10'>
                         <i class="fas fa-undo fa-4x text-secondary"></i>
-                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.2rem">10s</span>
+                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.1rem">10s</span>
                     </div>
 
                     <i id="play-btn" class="fas fa-play-circle fa-5x text-secondary"></i>
 
                     <div class="d-flex flex-column position-relative align-self-center"
-                         onclick='document.getElementById("player").currentTime -=10'>
+                         onclick='document.getElementById("player").currentTime +=10'>
                         <i class="fas fa-redo fa-4x text-secondary"></i>
-                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.2rem">10s</span>
+                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.1rem">10s</span>
                     </div>
 
 
