@@ -42,7 +42,7 @@ class Channel extends Model
         'id' => 'integer',
         'channel_id' => 'string',
         'name' => 'string',
-        'published' => 'date'
+        'published' => 'datetime'
     ];
 
     /**
