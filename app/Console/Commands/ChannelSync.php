@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\EntryDownload;
 use App\Models\Channel;
 use App\Utils\FeedFetcher;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class ChannelSync extends Command
@@ -44,6 +45,7 @@ class ChannelSync extends Command
         foreach ($channels as $channel) {
             $this->info('Sync Channel: '.$channel->name);
             $feed = FeedFetcher::fetch($channel->channel_id);
+            $channel->published = Carbon::parse($feed->entry[0]->published)->addHours(8);
             foreach ($feed->entry as $entry) {
                 $this->info('  Sync Entry: '.$entry->title);
                 EntryDownload::dispatchNow($channel->id , $entry);
