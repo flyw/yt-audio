@@ -120,6 +120,6 @@ class AppServiceProvider extends ServiceProvider
             // $event->exception
 
         });
-        URL::forceScheme('https');
+        if (env('USE_HTTPS', true)) URL::forceScheme('https');
     }
 }

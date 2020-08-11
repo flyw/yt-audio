@@ -34,8 +34,8 @@
 @endpush
 
 @section('content')
-    @include('flash::message')
     <div class="col-lg-6 col-sm-12 p-0">
+        @include('flash::message')
         <div class="card card-primary shadow-lg">
             <div class="embed-responsive embed-responsive-16by9">
                 <div class="embed-responsive-item d-flex">
@@ -51,10 +51,10 @@
                 <div class="d-flex justify-content-center">
                     <span class="badge badge-light badge-pill">{{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
                 </div>
-                <div class="card-text lead">
+                <div class="card-text lead pr-3 pl-3">
                     <span>{!! $entity->title !!}</span>
                 </div>
-                <div class="d-flex flex-row justify-content-between mt-2">
+                <div class="d-flex flex-row justify-content-between mt-2  pr-3 pl-3">
                     <span class="badge badge-success">
                             <span class="lead">
                                 <i class="far fa-eye"></i> {!! floor($entity->views_count/1000) !!}k
@@ -80,8 +80,8 @@
                         </span>
                 </div>
             </div>
-            <div class="card-body p-0 d-flex">
-                <div class="col-9 pr-3 pt-5 pb-5">
+            <div class="card-body p-0">
+                <div class="col-12 p-5">
                     <input class="form-control slider" style="width: 100%"
                            type="text"
                            name="rate"
@@ -95,8 +95,23 @@
                            data-slider-tooltip="hide"
                     >
                 </div>
-                <div class="col-3 d-flex">
-                        <i id="play-btn" class="align-self-center fas fa-play-circle fa-5x text-secondary"></i>
+                <div class="col-12 d-flex justify-content-between pr-5 pl-5 pt-0 pb-3">
+                    <div class="d-flex flex-column position-relative align-self-center"
+                         onclick='document.getElementById("player").currentTime +=10'>
+                        <i class="fas fa-undo fa-4x text-secondary"></i>
+                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.2rem">10s</span>
+                    </div>
+
+                    <i id="play-btn" class="fas fa-play-circle fa-5x text-secondary"></i>
+
+                    <div class="d-flex flex-column position-relative align-self-center"
+                         onclick='document.getElementById("player").currentTime -=10'>
+                        <i class="fas fa-redo fa-4x text-secondary"></i>
+                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.2rem">10s</span>
+                    </div>
+
+
+
                 </div>
 
 {{--                <audio controls id="audio_player" class="w-100">--}}
@@ -105,10 +120,14 @@
 {{--                </audio>--}}
 
             </div>
-            <div class="card-footer">
+            <div class="card-body">
                 <a class="btn btn-secondary btn-block" href="{{route("entities.edit",[$entity->id])}}">
                     <i class="fas fa-download"></i> Download Again
                 </a>
+            </div>
+            <div class="card-body">
+            {!! preg_replace('/\n/',"<br/>",$entity->description) !!}
+
             </div>
         </div>
     </div>
