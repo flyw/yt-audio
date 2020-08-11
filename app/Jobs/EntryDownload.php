@@ -51,8 +51,8 @@ class EntryDownload implements ShouldQueue
         }
         $entity->channel_id = $channelId;
         $entity->title = $item->title;
-        $entity->published = Carbon::parse($item->published)->setTimezone('Asia/Shanghai');
-        $entity->updated = Carbon::parse($item->published)->setTimezone('Asia/Shanghai');
+        $entity->published = Carbon::parse($item->published)->setTimezone('UTC');
+        $entity->updated = Carbon::parse($item->published)->setTimezone('UTC');
         $this->setThumbnail($entity, $item);
         $entity->thumbnail_source = $this->getThumbnail($item);
         $entity->description = $item->media_group->media_description;
