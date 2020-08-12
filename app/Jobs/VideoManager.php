@@ -65,7 +65,7 @@ class VideoManager implements ShouldQueue
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);
-        if ($output[0] == 'True') return true;
+        if (isset($output[0]) && $output[0] == 'True') return true;
         return false;
     }
     private function download() {
