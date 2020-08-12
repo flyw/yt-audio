@@ -41,7 +41,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
          $schedule->command('youtube-dl:channel-sync')->hourly();
-         $schedule->command('queue:work',['--timeout'=>180, '--stop-when-empty'])->everyMinute()->withoutOverlapping();
     }
 
     /**
