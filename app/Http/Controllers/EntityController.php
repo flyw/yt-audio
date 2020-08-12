@@ -121,6 +121,8 @@ class EntityController extends AppBaseController
 
             return redirect(route('entities.index'));
         }
+        $entity->is_viewed = 0;
+        $entity->save();
 
         Artisan::queue("youtube-dl:download", [ '--id' => $entity->id]);
 

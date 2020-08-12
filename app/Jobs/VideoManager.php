@@ -41,9 +41,12 @@ class VideoManager implements ShouldQueue
         $this->fileName = "/tmp/YT".$this->entity->video_id;
         if ($this->entity->video_uri == null) {
             if ($this->isLive()) {
+                $this->entity->viewd_index = 1;
+                $this->entity->save();
                 \Log::info('Live video, retry download in 1 hour');
                 return;
             }
+            $this->entity->viewd_index = null;
             $this->entity->video_uri = "null";
             $this->entity->save();
             $this->download();

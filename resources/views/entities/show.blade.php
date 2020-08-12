@@ -37,51 +37,61 @@
     <div class="col-lg-6 col-sm-12 p-0">
         @include('flash::message')
         <div class="card card-primary shadow-lg">
-            <div class="embed-responsive embed-responsive-16by9">
-                <div class="embed-responsive-item d-flex">
-                    <img class="w-100 align-self-center" src="{!! url('storage/'.$entity->thumbnail) !!}"/>
+            <div class="card-body p-0 position-relative">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <div class="embed-responsive-item d-flex">
+                        <img class="w-100 align-self-center" src="{!! url('storage/'.$entity->thumbnail) !!}"/>
+                    </div>
                 </div>
+
+                <div class="d-flex flex-column justify-content-between p-2 position-absolute" style="bottom: 0">
+                    @if ($entity->viewed_index == "1")
+                        <div class="lead">
+                            <span class="badge badge-danger bg-white text-danger border border-danger">
+                                 Live Now
+                            </span>
+                        </div>
+                    @endif
+
+                    <div class="lead">
+                            <span class="badge badge-info">
+                                <i class="far fa-eye"></i> {!! floor($entity->views_count/1000) !!}k
+                            </span>
+                    </div>
+
+                    <div class="lead">
+                            <span class="badge badge-success">
+                                <i class="far fa-play-circle"></i> {!! $entity->fileSize !!}
+                            </span>
+                    </div>
+
+                    <div class="lead">
+                            <span class="badge badge-secondary">
+                                <i class="far fa-clock"></i> {!! $entity->duration !!}
+                            </span>
+                    </div>
+
+                    <div class="lead">
+                            <span class="badge bg-dark">
+                                {{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}
+                            </span>
+                    </div>
+
+                </div>
+
             </div>
-            <div class="card-body bg-dark text-white p-1 m-0 pt-2 pb-2">
+            <div class="card-body bg-dark text-white p-0 m-0 ">
                 <div class="w-100">
-                    <audio controls id="player" class="w-100" preload="auto">
+                    <audio controls id="player" class="w-100 m-0 p-0" preload="auto">
                         <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="audio/mp4">
                     </audio>
                 </div>
-                <div class="d-flex justify-content-center">
-                    <span class="badge badge-light badge-pill">{{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
-                </div>
-                <div class="card-text lead pr-3 pl-3">
+                <div class="card-text lead p-3">
                     <span>{!! $entity->title !!}</span>
-                </div>
-                <div class="d-flex flex-row justify-content-between mt-2  pr-3 pl-3">
-                    <span class="badge badge-success">
-                            <span class="lead">
-                                <i class="far fa-eye"></i> {!! floor($entity->views_count/1000) !!}k
-                            </span>
-                        </span>
-
-                    <span class="badge badge-warning">
-                            <span class="lead">
-                                <i class="far fa-check-circle"></i> {!! $entity->rating_average !!}
-                            </span>
-                        </span>
-
-                    <span class="badge badge-primary">
-                            <span class="lead">
-                                <i class="far fa-play-circle"></i> {!! $entity->fileSize !!}
-                            </span>
-                        </span>
-
-                    <span class="badge badge-secondary">
-                            <span class="lead">
-                                <i class="far fa-clock"></i> {!! $entity->duration !!}
-                            </span>
-                        </span>
                 </div>
             </div>
             <div class="card-body p-0">
-                <div class="col-12 p-5">
+                <div class="col-12 pt-3 mt-3 pb-4 pl-5 pr-5">
                     <input class="form-control slider" style="width: 100%"
                            type="text"
                            name="rate"
@@ -109,9 +119,6 @@
                         <i class="fas fa-redo fa-4x text-secondary"></i>
                         <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.1rem">10s</span>
                     </div>
-
-
-
                 </div>
 
 {{--                <audio controls id="audio_player" class="w-100">--}}
