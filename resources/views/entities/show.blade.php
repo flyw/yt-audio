@@ -128,6 +128,13 @@
 
             </div>
             <div class="card-body">
+                <a class="btn btn-secondary btn-block"
+                   href="{!! preg_replace('/^https:/','vlc:',url('storage').'/'.$entity->video_uri)!!}">
+                    <i class="fab fa-youtube"></i> Play by VLC
+                </a>
+            </div>
+
+            <div class="card-body">
                 <a class="btn btn-secondary btn-block" href="{{route("entities.edit",[$entity->id])}}">
                     <i class="fas fa-download"></i> Download Again
                 </a>
