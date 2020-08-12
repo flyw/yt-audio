@@ -49,7 +49,7 @@
                             </span>
                         </span>
 
-                        @if ($entity->video_uri == "null")
+                        @if ($entity->video_uri == "null" || $entity->video_uri == null)
                             <span class="badge badge-danger d-flex">
                                 <a class="text-white pr-1 pl-1 align-self-center" href="{{route("entities.edit",[$entity->id])}}">
                                     <i class="fas fa-download fa"></i>
