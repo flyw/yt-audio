@@ -38,7 +38,7 @@ class ChannelController extends AppBaseController
     {
         $this->channelRepository->pushCriteria(new RequestCriteria($request));
         $channels = $this->channelRepository->with(['entities' => function ($q)  {
-            $q->where('published','>=', Carbon::now()->subDay()->setTime(0,0,0))
+            $q->where('published','>=', Carbon::now()->subDays(2)->setTime(0,0,0))
                 ->orderBy('published','DESC');
         }])->orderBy('published', 'DESC')->get();
         foreach ($channels as $channel) {
