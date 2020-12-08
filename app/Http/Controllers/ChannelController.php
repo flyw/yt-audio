@@ -38,13 +38,16 @@ class ChannelController extends AppBaseController
     {
         $this->channelRepository->pushCriteria(new RequestCriteria($request));
         $channels = $this->channelRepository->with(['entities' => function ($q)  {
-            $q->where('published','>=', Carbon::now()->subDays(2)->setTime(0,0,0))
+            $q->where('published','>=', Carbon::now()->subDays(7)->setTime(0,0,0))
                 ->orderBy('published','DESC');
         }])->orderBy('published', 'DESC')->get();
         foreach ($channels as $channel) {
             $channel->todayCount = $channel->entities->count();
             if ($channel->todayCount == 0) {
-                $channel->entities = collect([$channel->entities()->first()]);
+                $channel->entities = $channel->entities()
+                    ->orderBy('updated_at', 'DESC')
+                    ->limit(10)
+                    ->get();
             }
             foreach ($channel->entities as $entity) {
                 $size = @filesize(storage_path('app/public').'/'.$entity->video_uri);

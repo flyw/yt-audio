@@ -43,17 +43,20 @@
                 </div>
 
                     @foreach($channel->entities as $entity)
-                    <a href="{{route("entities.show",['entity' => $entity->id])}}" class="text-dark" onclick="setViewed({{$entity->id}})">
-                    <div id="item-card-{{$entity->id}}" class="card-footer d-flex flex-row align-items-center p-0 m-0 @if($entity->is_viewed) bg-dark text-white @endif">
+                    <div id="item-card-{{$entity->id}}" class="card-footer d-flex flex-row align-items-center p-0 m-0
+                        @if($entity->is_viewed) bg-dark text-white @endif
+                        @if(!$entity->duration) bg-secondary @endif
+                        ">
                         <div class="pr-2">
                             <div class="embed-responsive embed-responsive-16by9" style="width: 6rem">
                                 <div class="embed-responsive-item d-flex">
                                     <img class="w-100 align-self-center" src="{!! url('storage/'.$entity->thumbnail) !!}"/>
                                 </div>
                             </div>
-
                         </div>
-                        <span>{!! $entity->title !!}
+                        <a href="{{route("entities.show",['entity' => $entity->id])}}"
+                           class="@if($entity->is_viewed) bg-dark text-white @else text-dark @endif" onclick="setViewed({{$entity->id}})">
+                            {!! $entity->title !!}
                             <span class="badge badge-success">
                                 <i class="fas fa-file-movie-o"></i> {!! $entity->fileSize !!}
                             </span>
@@ -62,9 +65,16 @@
                             </span>
                             <span class="badge bg-dark">
                                 {{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
-                        </span>
+                        </a>
+                        @if(!$entity->duration)
+                            <span>
+                                <a class="btn btn-danger" href="{{route("entities.edit",[$entity->id])}}">
+                                    <i class="fas fa-download fa"></i> Retry
+                                </a>
+                            </span>
+                        @endif
                     </div>
-                    </a>
+
                     @endforeach
 
             </div>
