@@ -55,7 +55,7 @@ class EntryDownload implements ShouldQueue
         $entity->updated = Carbon::parse($item->published)->addHours(8);
         $this->setThumbnail($entity, $item);
         $entity->thumbnail_source = $this->getThumbnail($item);
-        $entity->description = json_encode($item->media_group->media_description);
+        $entity->description = (string) ($item->media_group->media_description);
         $starRating = $this->getAttributes($item->media_group->media_community->media_starRating);
         $statistics = $this->getAttributes($item->media_group->media_community->media_statistics);
         $entity->views_count = $statistics->views;
@@ -68,7 +68,7 @@ class EntryDownload implements ShouldQueue
 		$entity->save();
 	} catch (\Exception $e) {
 	 # dd($entity);
-	}	
+	}
         VideoManager::dispatch($entity->id);
     }
 
