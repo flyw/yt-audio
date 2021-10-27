@@ -50,8 +50,11 @@ class VideoManager implements ShouldQueue
             $this->entity->video_uri = "null";
             $this->entity->save();
             $this->download();
+            sleep(1);
             $this->updateDuration();
+            sleep(1);
             $this->encode();
+            sleep(1);
             \Log::info('Save entity.');
             $this->entity->save();
             \Log::info('Sleep 10 sec.');
@@ -75,10 +78,10 @@ class VideoManager implements ShouldQueue
         Log::info('Video Download... ');
         @unlink("/tmp/audio.webm");
         $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/audio.webm" https://www.youtube.com/watch?v='
-            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 10"';
+            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16"';
         Log::info($cmd);
-        exec($cmd, $output);
-        Log::info($output);
+        passthru($cmd);
+//        Log::info($output);
 //        $outputFile = $this->getDownloadedFilename($this->entity->video_id);
 //        rename($outputFile, "/tmp/YT".$this->entity->video_id);
     }
@@ -117,7 +120,7 @@ class VideoManager implements ShouldQueue
         Log::info('Video Encoded. ( '.(microtime(true)-$start).' sec )' );
         $sourceFileName = File::setPath("/tmp/audio-new.m4a")->saveToStorage();
         $this->entity->video_uri = $sourceFileName;
-        @unlink("/tmp/audio.webm");
-        @unlink("/tmp/audio-new.m4a");
+        unlink("/tmp/audio.webm");
+        unlink("/tmp/audio-new.m4a");
     }
 }

@@ -1,3 +1,20 @@
+@push('after-scripts')
+    <script>
+        $(document).ready(function (){
+            function getData() {
+                $.get("{!! route('show-queue-log') !!}?disableSource", function(result) {
+                    console.log(result);
+                    $("#progressBar").css('width', result['progress']+"%");
+                    $("#progressBar").html(result['eta'] + " " + result['fileSize'] + " " + result['progress']+"%");
+                });
+            }
+            $(".img-avatar").click(function () {
+                console.log('img-avatar clicked');
+                getData();
+            })
+        })
+    </script>
+@endpush
 <header class="app-header navbar">
     <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
         <span class="navbar-toggler-icon"></span>
@@ -63,7 +80,8 @@
 {{--        </li>--}}
         <li class="nav-item dropdown mr-3">
           <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            <img src="{{ $logged_in_user->picture }}" class="img-avatar" alt="{{ $logged_in_user->email }}">
+{{--            <img src="{{ $logged_in_user->picture }}" class="img-avatar" alt="{{ $logged_in_user->email }}">--}}
+              <i class="fas fa-user-circle fa-3x"></i>
               <span class="d-md-down-none">
                 {{ $logged_in_user->last_name }}@if(!preg_match("/\p{Han}$/u", $logged_in_user->last_name)) @endif{{ $logged_in_user->first_name }}
             </span>
@@ -105,7 +123,22 @@
             <div class="dropdown-header text-center">
               <strong>Account</strong>
             </div>
-            <a class="dropdown-item" href="{{ route('frontend.auth.logout') }}">
+              <div class="p-2" >
+                  <div class="progress">
+                    <div class="progress-bar bg-warning text-dark lead" id="progressBar" role="progressbar" style="width: 25%;" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  </div>
+              </div>
+              <a class="dropdown-item" href="{{ route('show-queue-log') }}">
+                  <i class="fas fa-lock"></i> show-queue-log
+              </a>
+              @php
+              exec("df -h |grep '/$'", $output);
+              @endphp
+              <span class="dropdown-item">
+                  {!! $output[0] !!}
+              </span>
+
+              <a class="dropdown-item" href="{{ route('frontend.auth.logout') }}">
                 <i class="fas fa-lock"></i> @lang('navs.general.logout')
             </a>
           </div>

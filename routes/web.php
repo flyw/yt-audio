@@ -36,12 +36,14 @@ Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', '
 
 
 Route::get('/home', 'HomeController@index');
-
+Route::get('/show-queue-log', 'HomeController@showQueueLogs')->name('show-queue-log');
 
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('channels', 'ChannelController');
 
     Route::resource('entities', 'EntityController');
+
+    Route::resource('downloads', 'DownloadController');
 });
 
 
