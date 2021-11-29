@@ -1,12 +1,22 @@
 @php
     function human_filesize($bytes, $decimals = 2) {
-  $sz = 'BKMGTP';
-  $factor = floor((strlen($bytes) - 1) / 3);
-  return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
-}
-function getExt($path) {
-    return @pathinfo($path)['extension'];
-}
+      $sz = 'BKMGTP';
+      $factor = floor((strlen($bytes) - 1) / 3);
+      return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+    }
+    function getExt($path) {
+        return @pathinfo($path)['extension'];
+    }
+    function fixTitle($name) {
+    $name = str_replace(array_merge(
+        array_map('chr', range(0, 31)),
+        array('<', '>', ':', '"', '/', '\\', '|', '?', '*')
+    ), ' ', $name);
+    // maximise filename length to 255 bytes http://serverfault.com/a/9548/44086
+    $ext = pathinfo($name, PATHINFO_EXTENSION);
+    $name= mb_strcut(pathinfo($name, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($name)) . ($ext ? '.' . $ext : '');
+    return $name;
+    }
 @endphp
 <div class="row">
         @foreach($downloads as $download)
@@ -56,7 +66,7 @@ function getExt($path) {
                         <div class="card card-body">
                             <span class="code small">
                                 scp root@b.moefunny.com:{!! storage_path("app/public/".$download->path) !!}
-                                "{!! $download->title !!}.{!! getExt($download->path) !!}"
+                                "{!! fixTitle($download->title) !!}.{!! getExt($download->path) !!}"
                             </span>
                         </div>
                     </div>

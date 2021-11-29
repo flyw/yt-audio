@@ -32,9 +32,9 @@ class YoutubeDownloadDeleteJob implements ShouldQueue
     public function handle()
     {
         $item = Download::find($this->downloadId);
-        if (file_exists(storage_path("app/public/".$item->path)))
+        if ($item->path && file_exists(storage_path("app/public/".$item->path)))
             unlink(storage_path("app/public/".$item->path));
-        if (file_exists(storage_path("app/public/".$item->thumbnail_path)))
+        if ($item->thumbnail_path && file_exists(storage_path("app/public/".$item->thumbnail_path)))
             unlink(storage_path("app/public/".$item->thumbnail_path));
         $item->delete();
     }

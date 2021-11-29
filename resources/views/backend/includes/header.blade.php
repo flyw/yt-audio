@@ -81,7 +81,7 @@
         <li class="nav-item dropdown mr-3">
           <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 {{--            <img src="{{ $logged_in_user->picture }}" class="img-avatar" alt="{{ $logged_in_user->email }}">--}}
-              <i class="fas fa-user-circle fa-3x"></i>
+              <i class="fas fa-user-circle fa-3x img-avatar"></i>
               <span class="d-md-down-none">
                 {{ $logged_in_user->last_name }}@if(!preg_match("/\p{Han}$/u", $logged_in_user->last_name)) @endif{{ $logged_in_user->first_name }}
             </span>

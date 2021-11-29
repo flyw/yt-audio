@@ -94,9 +94,12 @@ class DownloadController extends AppBaseController
         Log::info($output);
 //        dd($output[0]);
         $output = array_reverse($output);
-        array_pop($output);
-        array_pop($output);
-        array_pop($output);
+        $output = collect(array_reverse($output))->filter(function ($item) {
+            $matchResult = preg_match("/^\d+/", $item, $matches);
+            if ($matchResult) {
+                return $item;
+            }
+        })->toArray();
         $thumbnailLine = array_reverse($output)[0];
         $thumbnail = preg_replace("/^\d+\W+\d+\W+\d+\W+/", "", $thumbnailLine);
         $thumbnail = preg_replace("/\?.*?$/", "", $thumbnail);
@@ -118,10 +121,12 @@ class DownloadController extends AppBaseController
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);
-        $output = array_reverse($output);
-        array_pop($output);
-        array_pop($output);
-        array_pop($output);
+        $output = collect(array_reverse($output))->filter(function ($item) {
+            $matchResult = preg_match("/^\d+/", $item, $matches);
+            if ($matchResult) {
+                return $item;
+            }
+        })->toArray();
         $allFormats = [];
         foreach ($output as $item) {
             preg_match("/^\d+/", $item, $matches);
@@ -152,10 +157,9 @@ class DownloadController extends AppBaseController
 
     private function decodeAudioString($formatString, $format) {
         $format['type'] = 'a';
-        $formatString = trim(preg_replace('/audio only\W\w+\W+/',"", $formatString));
-        preg_match('/^\w+/', $formatString, $resolution);
-        $format['resolution'] = $resolution[0];
-
+        $formatString = trim(preg_replace('/audio only\W+/',"", $formatString));
+        preg_match('/^\w.*?,/', $formatString, $resolution);
+        $format['resolution'] = substr($resolution[0], 0, -2);
         preg_match('/\S+$/', $formatString, $fileSize);
         $format['fileSize'] = $fileSize[0];
         return $format;
@@ -163,12 +167,22 @@ class DownloadController extends AppBaseController
 
     private function decodeVideoString($formatString, $format) {
         $format['type'] = 'v';
-        $formatString = trim(preg_replace('/^\d+x\d+/',"", $formatString));
-        preg_match('/^\w+/', $formatString, $resolution);
-        $format['resolution'] = $resolution[0];
-
-        preg_match('/\S+$/', $formatString, $fileSize);
-        $format['fileSize'] = $fileSize[0];
+        if (preg_match('/DASH video/', $formatString)) {
+            preg_match('/^\S+/', $formatString, $resolution);
+            $format['resolution'] = $resolution[0];
+        }
+        else {
+            $formatString = trim(preg_replace('/^\d+x\d+/',"", $formatString));
+            preg_match('/^\w+/', $formatString, $resolution);
+            $format['resolution'] = $resolution[0];
+        }
+        $formatString = trim(preg_replace('/^.*,/', "", $formatString));
+        if (preg_match('/\d+\S+$/', $formatString, $fileSize)) {
+            $format['fileSize'] = $fileSize[0];
+        }
+        else {
+            $format['fileSize'] = 'NAN';
+        }
         return $format;
     }
 
