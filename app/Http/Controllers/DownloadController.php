@@ -65,12 +65,13 @@ class DownloadController extends AppBaseController
         $input = $request->all();
         $info= parse_url($request->get('video_id'));
         if (preg_match("/list=/", $info['query'])) {
-            $cmd = 'youtube-dl -J '.$request->get('video_id');
+            $cmd = 'youtube-dl -j '.$request->get('video_id');
             Log::info($cmd);
             exec($cmd, $output);
-            Log::info($output);
-            $jsonObject = json_decode($output[0]);
-            $this->createFromList($jsonObject->entries);
+//            Log::info($output);
+//            dd(json_decode($output[0]));
+//            $jsonObject = json_decode($output[0]);
+            $this->createFromList($output);
             return redirect(route('downloads.index'));
         }
         else {
@@ -81,7 +82,8 @@ class DownloadController extends AppBaseController
     }
 
     private function createFromList($entries) {
-        foreach ($entries as $entry) {
+        foreach ($entries as $entryJson) {
+            $entry = json_decode($entryJson);
             $item['video_id'] = $entry->webpage_url;
             $this->downloadRepository->create($item);
         }
