@@ -44,6 +44,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::resource('entities', 'EntityController');
 
     Route::resource('downloads', 'DownloadController');
+
+    Route::resource('aliyun', 'AliyunController');
 });
 
 

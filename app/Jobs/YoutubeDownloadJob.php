@@ -53,7 +53,7 @@ class YoutubeDownloadJob implements ShouldQueue
     private function download($item) {
 
         Log::info('Video Download... ');
-        $cmd = 'youtube-dl -f '.$item->selected_format.' -o "/tmp/'.$this->randomDirectory.'/%(id)s.%(ext)s" '.$item->video_id.'  --external-downloader aria2c --external-downloader-args "-x 16"';
+        $cmd = 'youtube-dl -f '.$item->selected_format.' -o "/tmp/'.$this->randomDirectory.'/%(id)s.%(ext)s" '.$item->video_id.' --all-subs --embed-subs --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"';
         Log::info($cmd);
         passthru($cmd);
 //        Log::info($output);

@@ -78,7 +78,7 @@ class VideoManager implements ShouldQueue
         Log::info('Video Download... ');
         @unlink("/tmp/audio.webm");
         $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/audio.webm" https://www.youtube.com/watch?v='
-            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16"';
+            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"';
         Log::info($cmd);
         passthru($cmd);
 //        Log::info($output);

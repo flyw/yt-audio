@@ -15,3 +15,9 @@
         <i class="nav-icon fas fa-info-circle"></i>Downloads
     </a>
 </li>
+
+<li class="nav-item">
+    <a class="nav-link {{ active_class(Active::checkUriPattern('aliyun*')) }}" href="{{ route('aliyun.index') }}">
+        <i class="nav-icon fas fa-info-circle"></i>Aliyun
+    </a>
+</li>
