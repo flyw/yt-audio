@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div class="card-body p-0">
-                <div class="col-12 pt-3 mt-3 pb-4 pl-5 pr-5">
+                <div class="col-12 pt-0 mt-3 pb-3 px-3">
                     <input class="form-control slider" style="width: 100%"
                            type="text"
                            name="rate"
@@ -114,25 +114,38 @@
                            data-slider-ticks="[1,1.25,1.5,1.75,2]"
                            data-slider-ticks-labels='[1,1.25,1.5,1.75,2]'
                            data-slider-min="1"
-                           data-slider-max="2"
+                           data-slider-max="3"
                            data-slider-step="0.25"
                            data-slider-value="1"
                            data-slider-tooltip="hide"
                     >
                 </div>
-                <div class="col-12 d-flex justify-content-between pr-5 pl-5 pt-0 pb-3">
+                <div class="col-12 d-flex justify-content-between px-2 pt-0 pb-3">
                     <div class="d-flex flex-column position-relative align-self-center"
                          onclick='document.getElementById("player").currentTime -=10'>
-                        <i class="fas fa-undo fa-4x text-secondary"></i>
-                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.1rem">10s</span>
+                        <span class="badge badge-light position-absolute align-self-center"  style="bottom: 0.8rem">10s</span>
+                        <i class="fas fa-undo fa-3x text-secondary" style="z-index: 1"></i>
                     </div>
 
-                    <i id="play-btn" class="fas fa-play-circle fa-5x text-secondary"></i>
+                    <div class="d-flex flex-column position-relative align-self-center"
+                         onclick='document.getElementById("player").currentTime -=60'>
+                        <i class="fas fa-undo fa-2x text-secondary"></i>
+                        <span class="badge badge-light">60s</span>
+                    </div>
+
+                    <i id="play-btn" class="fas fa-play-circle fa-4x text-secondary"></i>
+
+
+                    <div class="d-flex flex-column position-relative align-self-center"
+                         onclick='document.getElementById("player").currentTime +=60'>
+                        <i class="fas fa-redo fa-2x text-secondary"></i>
+                        <span class="badge badge-light" style="bottom: 1.1rem">60s</span>
+                    </div>
 
                     <div class="d-flex flex-column position-relative align-self-center"
                          onclick='document.getElementById("player").currentTime +=10'>
-                        <i class="fas fa-redo fa-4x text-secondary"></i>
-                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 1.1rem">10s</span>
+                        <i class="fas fa-redo fa-3x text-secondary" style="z-index: 1"></i>
+                        <span class="badge badge-light position-absolute align-self-center" style="bottom: 0.8rem">10s</span>
                     </div>
                 </div>
 
@@ -142,6 +155,11 @@
 {{--                </audio>--}}
 
             </div>
+            <div class="card-body">
+            {!! preg_replace('/\n/',"<br/>",$entity->description) !!}
+
+            </div>
+
             <div class="card-body">
                 <a class="btn btn-secondary btn-block"
                    href="{!! preg_replace('/^https:/','vlc:',url('storage').'/'.$entity->video_uri)!!}">
@@ -153,10 +171,6 @@
                 <a class="btn btn-secondary btn-block" href="{{route("entities.edit",[$entity->id])}}">
                     <i class="fas fa-download"></i> Download Again
                 </a>
-            </div>
-            <div class="card-body">
-            {!! preg_replace('/\n/',"<br/>",$entity->description) !!}
-
             </div>
         </div>
     </div>
