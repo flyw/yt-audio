@@ -32,17 +32,18 @@
                     player.playbackRate = newRate;
                 });
 
-
-            var video = document.getElementById('player');
-            var videoSrc = "{!! url('storage').'/'.$entity->video_uri !!}";
-            if (Hls.isSupported()) {
-                var hls = new Hls();
-                hls.loadSource(videoSrc);
-                hls.attachMedia(video);
-            }
-            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = videoSrc;
-            }
+            @if(preg_match('/m3u8/', $entity->video_uri))
+                var video = document.getElementById('player');
+                var videoSrc = "{!! url('storage').'/'.$entity->video_uri !!}";
+                if (Hls.isSupported()) {
+                    var hls = new Hls();
+                    hls.loadSource(videoSrc);
+                    hls.attachMedia(video);
+                }
+                else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = videoSrc;
+                }
+            @endif
         });
     </script>
 @endpush
@@ -97,7 +98,7 @@
             <div class="card-body bg-dark text-white p-0 m-0 ">
                 <div class="w-100">
                     <audio controls id="player" class="w-100 m-0 p-0" preload="auto" stretch="true">
-                        <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="application/x-mpegURL">
+                        <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="video/mp4">
                     </audio>
                 </div>
                 <div class="card-text lead p-3">

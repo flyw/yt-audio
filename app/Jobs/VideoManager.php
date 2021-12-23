@@ -19,6 +19,7 @@ class VideoManager implements ShouldQueue
     var $fileName = null;
     var $entityId = null;
     var $entity = null;
+    var $randomSeed = "randomSeed";
     /**
      * Create a new job instance.
      *
@@ -27,6 +28,7 @@ class VideoManager implements ShouldQueue
     public function __construct(int $entityId)
     {
         $this->entityId = $entityId;
+        $this->randomSeed = md5($entityId);
     }
 
     /**
@@ -76,8 +78,10 @@ class VideoManager implements ShouldQueue
     }
     private function download() {
         Log::info('Video Download... ');
-        @unlink("/tmp/audio.webm");
-        $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/audio.webm" https://www.youtube.com/watch?v='
+        exec("rm -rf /tmp/$this->randomSeed");
+        mkdir("/tmp/".$this->randomSeed, 0777);
+//        @unlink("/tmp/audio.webm");
+        $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
             .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"';
         Log::info($cmd);
         passthru($cmd);
@@ -102,7 +106,7 @@ class VideoManager implements ShouldQueue
     }
     private function updateDuration() {
         Log::info('Video get Duration... ');
-        $cmd = "ffprobe -i /tmp/audio.webm -sexagesimal -show_format -v quiet | sed -n 's/duration=//p'";
+        $cmd = "ffprobe -i /tmp/$this->randomSeed/$this->randomSeed.webm -sexagesimal -show_format -v quiet | sed -n 's/duration=//p'";
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);
@@ -113,14 +117,19 @@ class VideoManager implements ShouldQueue
     private function encode() {
         Log::info('Video Encoding... ');
         $start = microtime(true);
-        $cmd = "ffmpeg -i /tmp/audio.webm -ac 1 -ar 24000 -b:a 16k /tmp/audio-new.m4a -y";
+        $cmd = "ffmpeg -i /tmp/$this->randomSeed/$this->randomSeed.webm -ac 1 -ar 24000 -b:a 16k -f hls -hls_time 60 -hls_list_size 0 /tmp/$this->randomSeed/$this->randomSeed.m3u8 -y";
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);
         Log::info('Video Encoded. ( '.(microtime(true)-$start).' sec )' );
-        $sourceFileName = File::setPath("/tmp/audio-new.m4a")->saveToStorage();
+        $file = File::setPath("/tmp/$this->randomSeed/$this->randomSeed.m3u8");
+        $sourceFileName = $file->saveToStorage();
+        exec("rm ".$file->getTempPath());
+        $storagePath = pathinfo(storage_path("app/public/$sourceFileName"))['dirname'];
+        exec("cp /tmp/$this->randomSeed/$this->randomSeed*ts $storagePath");
+//        dd($storagePath, storage_path("app/public/$sourceFileName"));
         $this->entity->video_uri = $sourceFileName;
-        unlink("/tmp/audio.webm");
-        unlink("/tmp/audio-new.m4a");
+        exec("rm -rf /tmp/$this->randomSeed");
+//        unlink("/tmp/audio-new.m4a");
     }
 }

@@ -41,7 +41,10 @@ class YoutubeDownloadJob implements ShouldQueue
         $this->download($item);
         $myfiles = array_diff(scandir("/tmp/".$this->randomDirectory), array('.', '..'));
         $myfiles = array_values($myfiles);
-        $path = File::setPath("/tmp/".$this->randomDirectory.'/'.$myfiles[0])->saveToStorage("downloads");
+
+        $file = File::setPath("/tmp/".$this->randomDirectory.'/'.$myfiles[0]);
+        $path = $file->saveToStorage("downloads");
+        exec("rm ".$file->getTempPath());
 
         $item->path = $path;
         $item->save();
