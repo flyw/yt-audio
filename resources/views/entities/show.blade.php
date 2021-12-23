@@ -5,7 +5,9 @@
 @endpush
 
 @push('after-scripts')
+
     {!! script('bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js') !!}
+    {!! script('bower_components/hls.js/dist/hls.min.js') !!}
     <script>
         $(document).ready(function () {
             var player = document.getElementById("player");
@@ -29,6 +31,18 @@
                     console.log(newRate);
                     player.playbackRate = newRate;
                 });
+
+
+            var video = document.getElementById('player');
+            var videoSrc = "{!! url('storage').'/'.$entity->video_uri !!}";
+            if (Hls.isSupported()) {
+                var hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+            }
+            else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = videoSrc;
+            }
         });
     </script>
 @endpush
@@ -82,8 +96,8 @@
             </div>
             <div class="card-body bg-dark text-white p-0 m-0 ">
                 <div class="w-100">
-                    <audio controls id="player" class="w-100 m-0 p-0" preload="auto">
-                        <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="audio/mp4">
+                    <audio controls id="player" class="w-100 m-0 p-0" preload="auto" stretch="true">
+                        <source src="{!! url('storage').'/'.$entity->video_uri !!}" type="application/x-mpegURL">
                     </audio>
                 </div>
                 <div class="card-text lead p-3">
