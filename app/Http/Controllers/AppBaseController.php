@@ -34,4 +34,23 @@ class AppBaseController extends Controller
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
     }
+
+    function getFileSize($filenameWithPath) {
+        $pathInfo = @pathinfo($filenameWithPath);
+        if (isset($pathInfo['extension']) && $pathInfo['extension'] == 'm3u8') {
+            $dirname = $pathInfo['dirname'];
+            $content = file_get_contents($filenameWithPath);
+            $content = preg_replace("/\n/", " ", $content);
+            preg_match("/, .*?ts/", $content, $match);
+            $tsPrefix = substr($match[0], 2, -4);
+            unset($content);
+            $result = @exec("find $dirname -type f -name '$tsPrefix*' -exec du -cb {} + | grep total ");
+            $result = preg_replace("/\t.*?$/", "", $result);
+        }
+        else {
+            $result = @filesize($filenameWithPath);
+        }
+
+        return $result;
+    }
 }

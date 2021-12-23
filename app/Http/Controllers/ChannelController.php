@@ -50,7 +50,7 @@ class ChannelController extends AppBaseController
                     ->get();
             }
             foreach ($channel->entities as $entity) {
-                $size = @filesize(storage_path('app/public').'/'.$entity->video_uri);
+                $size = $this->getFileSize(storage_path('app/public').'/'.$entity->video_uri);
                 $entity->fileSize = $this->human_filesize($size);
             }
         }
@@ -118,7 +118,7 @@ class ChannelController extends AppBaseController
             ->paginate(40);
 
         foreach ($entities as $entity) {
-            $size = @filesize(storage_path('app/public').'/'.$entity->video_uri);
+            $size = $this->getFileSize(storage_path('app/public').'/'.$entity->video_uri);
             $entity->fileSize = $this->human_filesize($size);
         }
 

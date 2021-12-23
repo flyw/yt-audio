@@ -38,7 +38,7 @@ class EntityController extends AppBaseController
             ->orderBy('published', 'DESC')
             ->paginate(40);
         foreach ($entities as $entity) {
-            $size = @filesize(storage_path('app/public').'/'.$entity->video_uri);
+            $size = $this->getFileSize(storage_path('app/public').'/'.$entity->video_uri);
             $entity->fileSize = $this->human_filesize($size);
         }
 
@@ -99,7 +99,7 @@ class EntityController extends AppBaseController
             $entity->save();
         }
 
-        $size = @filesize(storage_path('app/public').'/'.$entity->video_uri);
+        $size = $this->getFileSize(storage_path('app/public').'/'.$entity->video_uri);
         $entity->fileSize = $this->human_filesize($size);
 
         return view('entities.show')->with('entity', $entity);
