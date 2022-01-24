@@ -59,6 +59,7 @@ class YoutubeDownloadJob implements ShouldQueue
         $cmd = 'youtube-dl -f '.$item->selected_format.' -o "/tmp/'.$this->randomDirectory.'/%(id)s.%(ext)s" '.$item->video_id.' --all-subs --embed-subs --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"';
         Log::info($cmd);
         passthru($cmd);
+        sleep(5);
 //        Log::info($output);
 //        $outputFile = $this->getDownloadedFilename($this->entity->video_id);
 //        rename($outputFile, "/tmp/YT".$this->entity->video_id);

@@ -39,13 +39,19 @@ class AppBaseController extends Controller
         $pathInfo = @pathinfo($filenameWithPath);
         if (isset($pathInfo['extension']) && $pathInfo['extension'] == 'm3u8') {
             $dirname = $pathInfo['dirname'];
-            $content = file_get_contents($filenameWithPath);
-            $content = preg_replace("/\n/", " ", $content);
-            preg_match("/, .*?ts/", $content, $match);
-            $tsPrefix = substr($match[0], 2, -4);
-            unset($content);
-            $result = @exec("find $dirname -type f -name '$tsPrefix*' -exec du -cb {} + | grep total ");
-            $result = preg_replace("/\t.*?$/", "", $result);
+            try {
+                $content = file_get_contents($filenameWithPath);
+                $content = preg_replace("/\n/", " ", $content);
+                preg_match("/, .*?ts/", $content, $match);
+                $tsPrefix = substr($match[0], 2, -4);
+                unset($content);
+                $result = @exec("find $dirname -type f -name '$tsPrefix*' -exec du -cb {} + | grep total ");
+                $result = preg_replace("/\t.*?$/", "", $result);
+            }
+            catch ( \Exception $e ) {
+                $result = -1;
+            }
+
         }
         else {
             $result = @filesize($filenameWithPath);
