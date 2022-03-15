@@ -15,7 +15,7 @@ class YoutubeDownloadJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $timeout = 21600; //6 hour
+    public $timeout = 60 * 60 * 6; //6 hour
 
     var $downloadId = null;
     var $randomDirectory = null;
@@ -63,5 +63,13 @@ class YoutubeDownloadJob implements ShouldQueue
 //        Log::info($output);
 //        $outputFile = $this->getDownloadedFilename($this->entity->video_id);
 //        rename($outputFile, "/tmp/YT".$this->entity->video_id);
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        if ($this->attempts() <= 4) {
+            // hard fail in first 4 attempts (2 hours)
+            $this->release(60 * 30);
+        }
     }
 }

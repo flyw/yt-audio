@@ -44,8 +44,8 @@ class EntryDownload implements ShouldQueue
         $item = json_decode($this->itemString);
         $channelId = $this->channelId;
 
-        $videoId = preg_replace('/yt:video:/','', $item->id);
-        $entity = Entity::firstOrNew(['video_id'=> $videoId]);
+        $videoId = preg_replace('/yt:video:/', '', $item->id);
+        $entity = Entity::firstOrNew(['video_id' => $videoId]);
         if ($entity->id == null) {
             Log::info(" New Entry: " . $item->title);
         }
@@ -55,7 +55,10 @@ class EntryDownload implements ShouldQueue
         $entity->updated = Carbon::parse($item->published)->addHours(8);
         $this->setThumbnail($entity, $item);
         $entity->thumbnail_source = $this->getThumbnail($item);
-        $entity->description = (string) ($item->media_group->media_description);
+        if (is_array($item->media_group->media_description))
+            $entity->description = join("<br/>\n", ($item->media_group->media_description));
+        else
+            $entity->description = (string)($item->media_group->media_description);
         $starRating = $this->getAttributes($item->media_group->media_community->media_starRating);
         $statistics = $this->getAttributes($item->media_group->media_community->media_statistics);
         $entity->views_count = $statistics->views;
@@ -63,16 +66,17 @@ class EntryDownload implements ShouldQueue
         $entity->rating_average = $starRating->average;
         if ($this->disableDownload == true) {
             $entity->video_uri = "null";
-	}
-	try {
-		$entity->save();
-	} catch (\Exception $e) {
-	 # dd($entity);
-	}
+        }
+        try {
+            $entity->save();
+        } catch (\Exception $e) {
+            # dd($entity);
+        }
         VideoManager::dispatch($entity->id);
     }
 
-    private function setThumbnail(&$entity, $item) {
+    private function setThumbnail(&$entity, $item)
+    {
         if ($this->getThumbnail($item) != $entity->thumbnail_source) {
             $entity->thumbnail = ImageFile::setPath($this->getThumbnail($item))
                 ->resize("160")
@@ -80,11 +84,13 @@ class EntryDownload implements ShouldQueue
         }
     }
 
-    private function getThumbnail($item) {
+    private function getThumbnail($item)
+    {
         return $this->getAttributes($item->media_group->media_thumbnail)->url;
     }
 
-    private function getAttributes($attributesParentItem) {
+    private function getAttributes($attributesParentItem)
+    {
         $keyArray = (array)$attributesParentItem;
         return $keyArray['@attributes'];
     }

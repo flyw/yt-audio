@@ -51,7 +51,10 @@ class VideoManager implements ShouldQueue
             $this->entity->viewd_index = null;
             $this->entity->video_uri = "null";
             $this->entity->save();
-            $this->download();
+
+            if (!$this->download()) {
+                return;
+            }
             sleep(1);
             $this->updateDuration();
             sleep(1);
@@ -82,12 +85,16 @@ class VideoManager implements ShouldQueue
         mkdir("/tmp/".$this->randomSeed, 0777);
 //        @unlink("/tmp/audio.webm");
         $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
-            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"';
+            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
         Log::info($cmd);
-        passthru($cmd);
-//        Log::info($output);
-//        $outputFile = $this->getDownloadedFilename($this->entity->video_id);
-//        rename($outputFile, "/tmp/YT".$this->entity->video_id);
+        exec($cmd, $output);
+        foreach ($output as $outputLine) {
+            if (str_contains($outputLine, "Video unavailable")) {
+                $this->entity->forceDelete();
+                return false;
+            }
+        }
+        return true;
     }
 
     private function getDownloadedFilename($videoId) {
@@ -132,4 +139,13 @@ class VideoManager implements ShouldQueue
         exec("rm -rf /tmp/$this->randomSeed");
 //        unlink("/tmp/audio-new.m4a");
     }
+
+    public function failed(\Throwable $exception)
+    {
+        if ($this->attempts() <= 4) {
+            // hard fail in first 4 attempts (2 hours)
+            $this->release(60 * 30);
+        }
+    }
+
 }
