@@ -72,7 +72,7 @@ class EntryDownload implements ShouldQueue
         } catch (\Exception $e) {
             # dd($entity);
         }
-        VideoManager::dispatch($entity->id);
+        VideoDownloadJob::dispatch($entity->id);
     }
 
     private function setThumbnail(&$entity, $item)

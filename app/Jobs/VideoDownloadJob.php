@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Joydata\Utilities\Utils\File;
 
-class VideoManager implements ShouldQueue
+class VideoDownloadJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -143,8 +143,12 @@ class VideoManager implements ShouldQueue
     public function failed(\Throwable $exception)
     {
         if ($this->attempts() <= 4) {
-            // hard fail in first 4 attempts (2 hours)
-            $this->release(60 * 30);
+            // hard fail in first 4 attempts (30, 60, 120, 240)
+            Log::debug("VideoDownloadJob: re-attempts: {$this->attempts()}");
+            $this->release((60 * 15) * ($this->attempts() + 1)* ($this->attempts() + 1));
+        }
+        else {
+            Log::debug("VideoDownloadJob: re-attempts: max.");
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\VideoManager;
+use App\Jobs\VideoDownloadJob;
 use App\Models\Entity;
 use Illuminate\Console\Command;
 
@@ -61,6 +61,6 @@ class DownloadVideo extends Command
         $entity = Entity::find($id);
         $entity->video_uri = null;
         $entity->save();
-        VideoManager::dispatchNow($id);
+        VideoDownloadJob::dispatchNow($id);
     }
 }

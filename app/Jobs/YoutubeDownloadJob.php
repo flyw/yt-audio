@@ -68,8 +68,12 @@ class YoutubeDownloadJob implements ShouldQueue
     public function failed(\Throwable $exception)
     {
         if ($this->attempts() <= 4) {
-            // hard fail in first 4 attempts (2 hours)
-            $this->release(60 * 30);
+            // hard fail in first 4 attempts (30, 60, 120, 240)
+            Log::debug("YoutubeDownloadJob: re-attempts: {$this->attempts()}");
+            $this->release((60 * 15) * ($this->attempts() + 1)* ($this->attempts() + 1));
+        }
+        else {
+            Log::debug("YoutubeDownloadJob: re-attempts: max.");
         }
     }
 }
