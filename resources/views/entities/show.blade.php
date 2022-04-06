@@ -11,7 +11,7 @@
     <script>
         $(document).ready(function () {
             var player = document.getElementById("player");
-            player.playbackRate = 1.1;
+            player.playbackRate = 1.01;
            $("#play-btn").click(function () {
                if (player.paused) {
                    player.play();
@@ -112,12 +112,12 @@
                            type="text"
                            name="rate"
                            data-provide="slider"
-                           data-slider-ticks="[1.1,1.25,1.5,1.75,2]"
-                           data-slider-ticks-labels='[1.1,1.25,1.5,1.75,2]'
-                           data-slider-min="1.1"
+                           data-slider-ticks="[1.01,1.26,1.51,1.76,2]"
+                           data-slider-ticks-labels='[1,1.25,1.5,1.75,2]'
+                           data-slider-min="1.01"
                            data-slider-max="2"
                            data-slider-step="0.25"
-                           data-slider-value="1.1"
+                           data-slider-value="1.01"
                            data-slider-tooltip="hide"
                     >
                 </div>
