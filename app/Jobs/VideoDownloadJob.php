@@ -65,9 +65,6 @@ class VideoDownloadJob implements ShouldQueue
             \Log::info('Sleep 10 sec.');
             sleep(10);
         }
-        else {
-            \Log::info('Skip download: '.$this->entity->video_uri);
-        }
     }
 
     private function isLive() {
