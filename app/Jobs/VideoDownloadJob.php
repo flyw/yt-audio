@@ -76,6 +76,10 @@ class VideoDownloadJob implements ShouldQueue
         if (isset($output[0]) && $output[0] == 'True') return true;
         return false;
     }
+
+    /**
+     * @throws \Exception
+     */
     private function download() {
         Log::info('Video Download... ');
         exec("rm -rf /tmp/$this->randomSeed");
@@ -90,6 +94,9 @@ class VideoDownloadJob implements ShouldQueue
                 $this->entity->forceDelete();
                 return false;
             }
+        }
+        if (file_exists("/tmp/$this->randomSeed/$this->randomSeed.web") == false) {
+            throw new \Exception("File Download Failed.");
         }
         return true;
     }
