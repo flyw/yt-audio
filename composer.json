@@ -9,7 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "ext-json": "*",
         "ext-simplexml": "*",
         "albertcht/invisible-recaptcha": "^1.9",
@@ -32,7 +32,7 @@
         "joydata/utilities": "dev-master",
         "lab404/laravel-impersonate": "^1.4",
         "langleyfoxall/laravel-nist-password-rules": "^4.0",
-        "laravel/framework": "^6.3",
+        "laravel/framework": "6.18.18",
         "laravel/socialite": "^4.1",
         "laravelcollective/html": "^6.0",
         "maatwebsite/excel": "~3.1",
@@ -54,8 +54,7 @@
         "mockery/mockery": "^1.0",
         "orangehill/iseed": "^2.6",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0",
-        "roave/security-advisories": "dev-master"
+        "phpunit/phpunit": "^8.0"
     },
     "config": {
         "preferred-install": "dist",
@@ -138,10 +137,6 @@
         "joydata": {
             "type": "composer",
             "url": "http://composer.joydata.com"
-        },
-        "packagist": {
-            "type": "composer",
-            "url": "https://mirrors.aliyun.com/composer/"
         }
     }
 }

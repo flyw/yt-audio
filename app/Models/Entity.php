@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $published
  * @property string $updated
  * @property integer $viewd_index
- * @property string $audio_file_uri
+ * @property string $video_uri
  * @property integer $split_count
  */
 class Entity extends Model

@@ -18,17 +18,24 @@ class VideoDownloadJob implements ShouldQueue
 
     var $fileName = null;
     var $entityId = null;
-    var $entity = null;
+    var ?Entity $entity = null;
     var $randomSeed = "randomSeed";
+    var $downloadRetry = 0;
+    var $attempts = 1;
+
+    public int $tries = 4;
+
     /**
      * Create a new job instance.
      *
      * @param int $entityId
      */
-    public function __construct(int $entityId)
+    public function __construct(int $entityId, $attempts = 1)
     {
+
         $this->entityId = $entityId;
         $this->randomSeed = md5($entityId);
+        $this->attempts = $attempts;
     }
 
     /**
@@ -38,6 +45,7 @@ class VideoDownloadJob implements ShouldQueue
      */
     public function handle()
     {
+        \Log::info("attempts: " .$this->attempts);
         set_time_limit(0);
         $this->entity = Entity::find($this->entityId);
         $this->fileName = "/tmp/YT".$this->entity->video_id;
@@ -49,9 +57,9 @@ class VideoDownloadJob implements ShouldQueue
                 return;
             }
             $this->entity->viewd_index = null;
-            $this->entity->video_uri = "null";
             $this->entity->save();
 
+            $this->clearDownloadPath();
             if (!$this->download()) {
                 return;
             }
@@ -77,13 +85,35 @@ class VideoDownloadJob implements ShouldQueue
         return false;
     }
 
-    /**
-     * @throws \Exception
-     */
-    private function download() {
+    private function clearDownloadPath() {
         Log::info('Video Download... ');
         exec("rm -rf /tmp/$this->randomSeed");
         mkdir("/tmp/".$this->randomSeed, 0777);
+    }
+    /**
+     * @throws \Exception
+     */
+    private function download(): bool
+    {
+        try {
+            return $this->doDownload();
+        }
+        catch (\Exception $e) {
+            if ($this->downloadRetry++ < 3) {
+                Log::info("Video Download retry: $this->downloadRetry times.");
+                return $this->download();
+            }
+            else {
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function doDownload(): bool
+    {
 //        @unlink("/tmp/audio.webm");
         $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
             .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
@@ -95,12 +125,16 @@ class VideoDownloadJob implements ShouldQueue
                 return false;
             }
         }
-        if (file_exists("/tmp/$this->randomSeed/$this->randomSeed.web") == false) {
-            throw new \Exception("File Download Failed.");
+        if (file_exists("/tmp/$this->randomSeed/$this->randomSeed.webm") == false) {
+            throw new \Exception("File Download Failed. Entity: ".$this->entity->title);
         }
         return true;
+
     }
 
+    /**
+     * @throws \Exception
+     */
     private function getDownloadedFilename($videoId) {
         $dir = "/tmp";
         $files = scandir($dir);
@@ -144,12 +178,14 @@ class VideoDownloadJob implements ShouldQueue
 //        unlink("/tmp/audio-new.m4a");
     }
 
-    public function failed(\Throwable $exception)
+    public function failed($exception)
     {
+
+        Log::debug("VideoDownloadJob: onfailed: {$this->attempts()}");
         if ($this->attempts() <= 4) {
             // hard fail in first 4 attempts (30, 60, 120, 240)
             Log::debug("VideoDownloadJob: re-attempts: {$this->attempts()}");
-            $this->release((60 * 15) * ($this->attempts() + 1)* ($this->attempts() + 1));
+            VideoDownloadJob::dispatch($this->entity->id)->delay(15 * ($this->attempts() + 1)* ($this->attempts() + 1));
         }
         else {
             Log::debug("VideoDownloadJob: re-attempts: max.");

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateEntityRequest;
 use App\Http\Requests\UpdateEntityRequest;
+use App\Jobs\VideoDownloadJob;
 use App\Repositories\EntityRepository;
 use App\Http\Controllers\AppBaseController;
 use App\Utils\AudioManager;
@@ -122,9 +123,10 @@ class EntityController extends AppBaseController
             return redirect(route('entities.index'));
         }
         $entity->is_viewed = 0;
+        $entity->video_uri = null;
         $entity->save();
-
-        Artisan::queue("youtube-dl:download", [ '--id' => $entity->id]);
+        VideoDownloadJob::dispatch($entity->id);
+//        Artisan::queue("youtube-dl:download", [ '--id' => $entity->id]);
 
         Flash::success('Video is downloaded in Queue.');
         return Redirect::back()->with('msg', 'The Message');
