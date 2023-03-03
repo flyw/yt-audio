@@ -212,7 +212,9 @@ class VideoDownloadJob implements ShouldQueue
         if ($this->attempts() <= 4) {
             // hard fail in first 4 attempts (30, 60, 120, 240)
             Log::debug("VideoDownloadJob: re-attempts: {$this->attempts()}");
-            VideoDownloadJob::dispatch($this->entity->id)->delay(15 * ($this->attempts() + 1)* ($this->attempts() + 1));
+            if ($this->entity->ignore == 0)  {
+                VideoDownloadJob::dispatch($this->entity->id)->delay(15 * ($this->attempts() + 1)* ($this->attempts() + 1));
+            }
         }
         else {
             Log::debug("VideoDownloadJob: re-attempts: max.");
