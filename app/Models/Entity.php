@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Class Entity
  * @package App\Models
- * @version August 7, 2020, 11:26 am CST
+ * @version March 3, 2023, 10:13 am CST
  *
  * @property integer $channel_id
  * @property string $title
@@ -20,11 +20,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property integer $rating_count
  * @property string $rating_average
  * @property integer $is_viewed
- * @property string $published
- * @property string $updated
+ * @property string|\Carbon\Carbon $published
+ * @property string|\Carbon\Carbon $updated
  * @property integer $viewd_index
- * @property string $video_uri
+ * @property string $audio_file_uri
  * @property integer $split_count
+ * @property string $duration
+ * @property string $video_uri
+ * @property integer $source_duration
+ * @property integer $ignore
  */
 class Entity extends Model
 {
@@ -54,7 +58,11 @@ class Entity extends Model
         'updated',
         'viewd_index',
         'audio_file_uri',
-        'split_count'
+        'split_count',
+        'duration',
+        'video_uri',
+        'source_duration',
+        'ignore'
     ];
 
     /**
@@ -78,7 +86,11 @@ class Entity extends Model
         'updated' => 'datetime',
         'viewd_index' => 'integer',
         'audio_file_uri' => 'string',
-        'split_count' => 'integer'
+        'split_count' => 'integer',
+        'duration' => 'string',
+        'video_uri' => 'string',
+        'source_duration' => 'integer',
+        'ignore' => 'integer'
     ];
 
     /**
@@ -101,7 +113,11 @@ class Entity extends Model
         'updated' => 'required',
         'viewd_index' => 'nullable',
         'audio_file_uri' => 'nullable|string|max:191',
-        'split_count' => 'nullable'
+        'split_count' => 'nullable',
+        'duration' => 'nullable|string|max:191',
+        'video_uri' => 'nullable|string|max:191',
+        'source_duration' => 'nullable|integer',
+        'ignore' => 'required'
     ];
 
     public function channel() {

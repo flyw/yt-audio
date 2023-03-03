@@ -7,6 +7,7 @@ use App\Models\Channel;
 use App\Utils\FeedFetcher;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ChannelSync extends Command
 {
@@ -44,12 +45,17 @@ class ChannelSync extends Command
         $channels = Channel::all();
         foreach ($channels as $channel) {
             $this->info('Sync Channel: '.$channel->name);
-            $feed = FeedFetcher::fetch($channel->channel_id);
-            $channel->published = Carbon::parse($feed->entry[0]->published)->addHours(8);
-            $channel->save();
-            foreach ($feed->entry as $entry) {
-                $this->info('  Sync Entry: '.$entry->title);
-                EntryDownload::dispatchNow($channel->id , $entry);
+            try {
+                $feed = FeedFetcher::fetch($channel->channel_id);
+                $channel->published = Carbon::parse($feed->entry[0]->published)->addHours(8);
+                $channel->save();
+                foreach ($feed->entry as $entry) {
+                    $this->info('  Sync Entry: ' . $entry->title);
+                    EntryDownload::dispatchNow($channel->id, $entry);
+                }
+            }
+            catch (\Exception $e) {
+                Log::error($e->getMessage());
             }
         }
         $this->info('done');

@@ -56,6 +56,10 @@ class VideoDownloadJob implements ShouldQueue
                 \Log::info('Live video, retry download in 1 hour');
                 return;
             }
+            $this->getSourceDurationAndIgnoreShort($this->entity);
+            if ($this->entity->ignore = 1)
+                return;
+
             $this->entity->viewd_index = null;
             $this->entity->save();
 
@@ -75,8 +79,28 @@ class VideoDownloadJob implements ShouldQueue
         }
     }
 
+    private function getSourceDurationAndIgnoreShort(Entity $entity) {
+//        $cmd = 'youtube-dl -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
+//            .$this->entity->video_id;
+        $cmd = 'yt-dlp -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
+            .$this->entity->video_id;
+        Log::info($cmd);
+        exec($cmd, $output);
+        Log::info($output);
+
+        if (isset($output[0])) {
+            $entity->source_duration = $output[0];
+            if ($entity->source_duration < 200) {
+                $entity->ignore = 1;
+            }
+            $entity->save();
+        }
+    }
+
     private function isLive() {
-        $cmd = 'youtube-dl -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
+//        $cmd = 'youtube-dl -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
+//            .$this->entity->video_id;
+        $cmd = 'yt-dlp -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
             .$this->entity->video_id;
         Log::info($cmd);
         exec($cmd, $output);
@@ -116,6 +140,8 @@ class VideoDownloadJob implements ShouldQueue
     {
 //        @unlink("/tmp/audio.webm");
         $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
+            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
+        $cmd = 'yt-dlp -f "wa" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
             .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
         Log::info($cmd);
         exec($cmd, $output);
@@ -158,6 +184,7 @@ class VideoDownloadJob implements ShouldQueue
         $time = @$output[0];
         $duration =  preg_replace('/^0:|\.\d+$/', "", $time);
         $this->entity->duration = $duration;
+        $this->entity->is_viewed = 0;
     }
     private function encode() {
         Log::info('Video Encoding... ');
