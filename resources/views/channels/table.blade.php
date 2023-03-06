@@ -61,8 +61,9 @@
                                 <i class="fas fa-file-movie-o"></i> {!! $entity->fileSize !!}
                             </span>
                             <span class="badge badge-secondary">
-                                <i class="fas fa-play"></i> {!! $entity->duration !!}
+                                <i class="fas fa-play"></i> {!! (int) ($entity->source_duration/60) !!} / {!! $entity->duration !!}
                             </span>
+
                             <span class="badge bg-dark">
                                 {{\Carbon\Carbon::parse($entity->published)->diffForHumans()}}</span>
                         </a>

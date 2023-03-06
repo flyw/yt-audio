@@ -64,6 +64,9 @@ class EntryDownload implements ShouldQueue
         $entity->views_count = $statistics->views;
         $entity->rating_count = $starRating->count;
         $entity->rating_average = $starRating->average;
+        if ($this->isLive() == false) {
+            $this->getSourceDurationAndIgnoreShort($entity);
+        }
         if ($this->disableDownload == true) {
             $entity->video_uri = "null";
         }
@@ -73,6 +76,37 @@ class EntryDownload implements ShouldQueue
             # dd($entity);
         }
         VideoDownloadJob::dispatch($entity->id);
+    }
+
+    private function isLive() {
+//        $cmd = 'youtube-dl -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
+//            .$this->entity->video_id;
+        $cmd = 'yt-dlp -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
+            .$this->entity->video_id;
+        Log::info($cmd);
+        exec($cmd, $output);
+        Log::info($output);
+        if (isset($output[0]) && $output[0] == 'True') return true;
+        return false;
+    }
+
+    private function getSourceDurationAndIgnoreShort(Entity $entity) {
+//        $cmd = 'youtube-dl -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
+//            .$this->entity->video_id;
+        $cmd = 'yt-dlp -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
+            .$this->entity->video_id;
+        Log::info($cmd);
+        exec($cmd, $output);
+        Log::info($output);
+
+        if (isset($output[0])) {
+            $entity->source_duration = $output[0];
+
+            if ((int)$entity->source_duration < 200) {
+                $entity->ignore = 1;
+            }
+            $entity->save();
+        }
     }
 
     private function setThumbnail(&$entity, $item)

@@ -57,8 +57,10 @@ class VideoDownloadJob implements ShouldQueue
                 return;
             }
             $this->getSourceDurationAndIgnoreShort($this->entity);
-            if ($this->entity->ignore = 1)
+            if ($this->entity->ignore == 1) {
+                Log::info("ignore exit, source: {$this->entity->source_duration}");
                 return;
+            }
 
             $this->entity->viewd_index = null;
             $this->entity->save();
@@ -75,7 +77,7 @@ class VideoDownloadJob implements ShouldQueue
             \Log::info('Save entity.');
             $this->entity->save();
             \Log::info('Sleep 10 sec.');
-            sleep(10);
+            sleep(60);
         }
     }
 
@@ -90,7 +92,8 @@ class VideoDownloadJob implements ShouldQueue
 
         if (isset($output[0])) {
             $entity->source_duration = $output[0];
-            if ($entity->source_duration < 200) {
+
+            if ((int)$entity->source_duration < 200) {
                 $entity->ignore = 1;
             }
             $entity->save();
@@ -141,8 +144,10 @@ class VideoDownloadJob implements ShouldQueue
 //        @unlink("/tmp/audio.webm");
         $cmd = 'youtube-dl -f "worstaudio" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
             .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
-        $cmd = 'yt-dlp -f "wa" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" https://www.youtube.com/watch?v='
-            .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
+
+        $timeout = ($this->entity->source_duration + 1);
+        $cmd = 'yt-dlp -f "wa" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" "' .$this->entity->video_id .'" '
+            ." --socket-timeout $timeout 2>&1";
         Log::info($cmd);
         exec($cmd, $output);
         foreach ($output as $outputLine) {
