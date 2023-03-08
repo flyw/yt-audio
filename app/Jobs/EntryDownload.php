@@ -94,7 +94,7 @@ class EntryDownload implements ShouldQueue
 //        $cmd = 'youtube-dl -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
 //            .$this->entity->video_id;
         $cmd = 'yt-dlp -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
-            .$this->entity->video_id;
+            .$entity->video_id;
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);
