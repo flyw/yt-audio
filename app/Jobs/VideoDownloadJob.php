@@ -66,6 +66,11 @@ class VideoDownloadJob implements ShouldQueue
             $this->entity->save();
 
             $this->clearDownloadPath();
+            if($this->entity->source_duration == null) {
+                Log::error("source_duration not fetched. " . $this->entity->toJson());
+                return;
+            }
+
             if (!$this->download()) {
                 return;
             }
@@ -76,7 +81,7 @@ class VideoDownloadJob implements ShouldQueue
             sleep(1);
             \Log::info('Save entity.');
             $this->entity->save();
-            \Log::info('Sleep 10 sec.');
+            \Log::info('Sleep 60 sec.');
             sleep(60);
         }
     }
@@ -146,7 +151,7 @@ class VideoDownloadJob implements ShouldQueue
             .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
 
         $timeout = ($this->entity->source_duration + 1);
-        $cmd = 'yt-dlp -f "wa" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" "' .$this->entity->video_id .'" '
+        $cmd = 'yt-dlp -f "wa" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" "https://www.youtube.com/watch?v=' .$this->entity->video_id .'" '
             ." --socket-timeout $timeout 2>&1";
         Log::info($cmd);
         exec($cmd, $output);

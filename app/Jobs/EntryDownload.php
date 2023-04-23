@@ -64,11 +64,13 @@ class EntryDownload implements ShouldQueue
         $entity->views_count = $statistics->views;
         $entity->rating_count = $starRating->count;
         $entity->rating_average = $starRating->average;
-        if ($this->isLive() == false) {
-            $this->getSourceDurationAndIgnoreShort($entity);
-        }
-        if ($this->disableDownload == true) {
-            $entity->video_uri = "null";
+        if ($entity->id == null) {
+            if ($this->isLive($entity) == false) {
+                $this->getSourceDurationAndIgnoreShort($entity);
+            }
+            if ($this->disableDownload == true) {
+                $entity->video_uri = "null";
+            }
         }
         try {
             $entity->save();
@@ -78,11 +80,11 @@ class EntryDownload implements ShouldQueue
         VideoDownloadJob::dispatch($entity->id);
     }
 
-    private function isLive() {
+    private function isLive($entity) {
 //        $cmd = 'youtube-dl -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
 //            .$this->entity->video_id;
         $cmd = 'yt-dlp -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
-            .$this->entity->video_id;
+            .$entity->video_id;
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);

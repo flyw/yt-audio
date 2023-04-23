@@ -46,8 +46,8 @@ class ChannelController extends AppBaseController
             $channel->todayCount = $channel->entities->count();
             if ($channel->todayCount == 0) {
                 $channel->entities = $channel->entities()
-                    ->orderBy('updated_at', 'DESC')
-                    ->limit(10)
+                    ->orderBy('published', 'DESC')
+                    ->limit(1)
                     ->get();
             }
             foreach ($channel->entities as $entity) {

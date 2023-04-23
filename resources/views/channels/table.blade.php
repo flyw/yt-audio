@@ -43,6 +43,9 @@
                 </div>
 
                     @foreach($channel->entities as $entity)
+                        @if($entity->source_duration == null)
+                            @continue
+                        @endif
                     <div id="item-card-{{$entity->id}}" class="card-footer d-flex flex-row align-items-center p-0 m-0
                         @if($entity->is_viewed) bg-dark text-white @endif
                         @if(!$entity->duration) bg-secondary @endif
