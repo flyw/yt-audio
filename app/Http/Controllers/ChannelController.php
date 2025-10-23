@@ -116,6 +116,7 @@ class ChannelController extends AppBaseController
 
         $entities = Entity::where('channel_id', $channel->id)
             ->orderBy('published', 'DESC')
+            ->where("ignore", 0)
             ->paginate(40);
 
         foreach ($entities as $entity) {
