@@ -163,6 +163,13 @@
 
             <div class="card-body">
                 <a class="btn btn-secondary btn-block"
+                   href="https://www.youtube.com/watch?v={!! $entity->video_id !!}">
+                    <i class="fab fa-youtube"></i> Play on Youtube
+                </a>
+            </div>
+
+            <div class="card-body">
+                <a class="btn btn-secondary btn-block"
                    href="{!! preg_replace('/^https:/','vlc:',url('storage').'/'.$entity->video_uri)!!}">
                     <i class="fab fa-youtube"></i> Play by VLC
                 </a>
