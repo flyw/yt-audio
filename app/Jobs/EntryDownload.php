@@ -83,7 +83,7 @@ class EntryDownload implements ShouldQueue
     private function isLive($entity) {
 //        $cmd = 'youtube-dl -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
 //            .$this->entity->video_id;
-        $cmd = 'yt-dlp -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
+        $cmd = 'yt-dlp -o "%(is_live)s" --cookies-from-browser firefox:/root/.mozilla/firefox-esr --get-filename https://www.youtube.com/watch?v='
             .$entity->video_id;
         Log::info($cmd);
         exec($cmd, $output);
@@ -95,7 +95,7 @@ class EntryDownload implements ShouldQueue
     private function getSourceDurationAndIgnoreShort(Entity $entity) {
 //        $cmd = 'youtube-dl -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
 //            .$this->entity->video_id;
-        $cmd = 'yt-dlp -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
+        $cmd = 'yt-dlp -o "%(duration)s" --cookies-from-browser firefox:/root/.mozilla/firefox-esr --get-filename https://www.youtube.com/watch?v='
             .$entity->video_id;
         Log::info($cmd);
         exec($cmd, $output);
