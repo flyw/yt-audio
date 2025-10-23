@@ -45,18 +45,20 @@ class VideoDownloadJob implements ShouldQueue
      */
     public function handle()
     {
-        \Log::info("attempts: " .$this->attempts);
         set_time_limit(0);
         $this->entity = Entity::find($this->entityId);
         $this->fileName = "/tmp/YT".$this->entity->video_id;
         if ($this->entity->video_uri == null) {
-            if ($this->isLive()) {
+            \Log::info("attempts: " .$this->attempts);
+            \Log::info( mb_substr($this->entity->title, 0 , 20) );
+
+            if (!$this->getInfo()) {
                 $this->entity->viewd_index = 1;
                 $this->entity->save();
                 \Log::info('Live video, retry download in 1 hour');
                 return;
             }
-            $this->getSourceDurationAndIgnoreShort($this->entity);
+
             if ($this->entity->ignore == 1) {
                 Log::info("ignore exit, source: {$this->entity->source_duration}");
                 return;
@@ -81,44 +83,48 @@ class VideoDownloadJob implements ShouldQueue
             sleep(1);
             \Log::info('Save entity.');
             $this->entity->save();
-            \Log::info('Sleep 60 sec.');
-            sleep(60);
+            \Log::info('Sleep 10 sec.');
+            sleep(10);
         }
     }
 
-    private function getSourceDurationAndIgnoreShort(Entity $entity) {
-//        $cmd = 'youtube-dl -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
-//            .$this->entity->video_id;
-        $cmd = 'yt-dlp -o "%(duration)s" --get-filename https://www.youtube.com/watch?v='
+    private function getInfo($retry = false): bool {
+        $cmd = 'yt-dlp -o "%(duration)s , %(is_live)s" --no-warnings --cookies-from-browser firefox:/root/.mozilla/firefox-esr --get-filename https://www.youtube.com/watch?v='
             .$this->entity->video_id;
         Log::info($cmd);
-        exec($cmd, $output);
-        Log::info($output);
-
+        exec($cmd.' 2>&1', $output);
         if (isset($output[0])) {
-            $entity->source_duration = $output[0];
-
-            if ((int)$entity->source_duration < 200) {
-                $entity->ignore = 1;
+            Log::info($output);
+            if (preg_match("/^ERROR.*?not a bot/", $output[0])) {
+                if (!$retry)
+                {
+                    $command = 'firefox-esr --headless --user-agent="Mozilla/5.0 (Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" https://www.youtube.com --screenshot /tmp/screen.png';
+                    exec($command);
+                    return $this->getInfo(true);
+                }
+                else {
+                    exec("systemctl stop supervisor.service");
+                    return true;
+                }
             }
-            $entity->save();
+            else if (preg_match("/^\d+ ,/", $output[0])) {
+                list ($duration, $isLive) = explode("," , $output[0]);
+                $this->entity->source_duration = $duration;
+                if ((int)$this->entity->source_duration < 200) {
+                    $this->entity->ignore = 1;
+                }
+                $this->entity->save();
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-    }
-
-    private function isLive() {
-//        $cmd = 'youtube-dl -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
-//            .$this->entity->video_id;
-        $cmd = 'yt-dlp -o "%(is_live)s" --get-filename https://www.youtube.com/watch?v='
-            .$this->entity->video_id;
-        Log::info($cmd);
-        exec($cmd, $output);
-        Log::info($output);
-        if (isset($output[0]) && $output[0] == 'True') return true;
         return false;
     }
 
     private function clearDownloadPath() {
-        Log::info('Video Download... ');
+        Log::info('Video Download... clearDownloadPath');
         exec("rm -rf /tmp/$this->randomSeed");
         mkdir("/tmp/".$this->randomSeed, 0777);
     }
@@ -151,7 +157,7 @@ class VideoDownloadJob implements ShouldQueue
             .$this->entity->video_id .'  --external-downloader aria2c --external-downloader-args "-x 16 -s 16 -k 1M"  2>&1';
 
         $timeout = ($this->entity->source_duration + 1);
-        $cmd = 'yt-dlp -f "wa" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" "https://www.youtube.com/watch?v=' .$this->entity->video_id .'" '
+        $cmd = 'yt-dlp --cookies-from-browser firefox:/root/.mozilla/firefox-esr -f "wa*" -o "/tmp/'.$this->randomSeed.'/'.$this->randomSeed.'.webm" "https://www.youtube.com/watch?v=' .$this->entity->video_id .'" '
             ." --socket-timeout $timeout 2>&1";
         Log::info($cmd);
         exec($cmd, $output);
@@ -199,7 +205,7 @@ class VideoDownloadJob implements ShouldQueue
     private function encode() {
         Log::info('Video Encoding... ');
         $start = microtime(true);
-        $cmd = "ffmpeg -i /tmp/$this->randomSeed/$this->randomSeed.webm -ac 1 -ar 24000 -b:a 16k -f hls -hls_time 60 -hls_list_size 0 /tmp/$this->randomSeed/$this->randomSeed.m3u8 -y";
+        $cmd = "ffmpeg -i /tmp/$this->randomSeed/$this->randomSeed.webm -vn -ac 1 -ar 24000 -b:a 16k -f hls -hls_time 60 -hls_list_size 0 /tmp/$this->randomSeed/$this->randomSeed.m3u8 -y";
         Log::info($cmd);
         exec($cmd, $output);
         Log::info($output);
